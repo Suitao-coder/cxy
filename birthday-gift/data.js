@@ -4,20 +4,20 @@ window.DATA = {
   "entries": [
     {
       "name": "第一次见面",
-      "date": "2026-05-01",
-      "note": "那天你穿了一件很好看的白裙子。",
-      "annual": false
-    },
-    {
-      "name": "在一起",
-      "date": "2026-06-06",
+      "date": "2024-04-01",
       "note": "",
       "annual": false
     },
     {
       "name": "你的生日",
-      "date": "2008-03-14",
+      "date": "2010-09-18",
       "note": "一年里最特别的一天。",
+      "annual": true
+    },
+    {
+      "name": "我和你坦白",
+      "date": "2026-02-28",
+      "note": "",
       "annual": true
     }
   ]
