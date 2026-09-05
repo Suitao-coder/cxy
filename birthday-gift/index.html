@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我们的日子</title>
+<style>
+  :root{
+    --paper:#faf5ee;
+    --paper-deep:#f3ebe0;
+    --ink:#43322e;
+    --ink-soft:#8a746c;
+    --rose:#b5525a;
+    --rose-deep:#96404a;
+    --gold:#b08a4f;
+    --line:#e2d5c5;
+    --serif:"Noto Serif SC","Source Han Serif SC","Songti SC",STSong,SimSun,serif;
+    --kai:"STKaiti","KaiTi","Kaiti SC","Noto Serif SC",serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    min-height:100vh;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(181,82,90,.06), transparent),
+      repeating-linear-gradient(0deg, transparent 0 31px, rgba(67,50,46,.018) 31px 32px);
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:64px 28px 120px}
+
+  /* ---------- 头部 ---------- */
+  .masthead{border-bottom:1px solid var(--line);padding-bottom:36px;margin-bottom:8px}
+  .masthead .date-line{
+    font-size:12px;letter-spacing:.35em;color:var(--ink-soft);
+    text-transform:uppercase;margin-bottom:20px;display:flex;justify-content:space-between;align-items:baseline;
+  }
+  .masthead .date-line .en{font-family:Georgia,serif;font-style:italic;letter-spacing:.12em}
+  h1{
+    font-family:var(--kai);
+    font-size:clamp(42px,7vw,72px);
+    font-weight:400;
+    letter-spacing:.06em;
+    line-height:1.1;
+  }
+  h1 em{font-style:normal;color:var(--rose)}
+  .masthead .sub{
+    margin-top:14px;color:var(--ink-soft);font-size:14px;letter-spacing:.08em;
+  }
+
+  /* ---------- 纪念日列表 ---------- */
+  .entries{display:flex;flex-direction:column}
+  .entry{
+    display:grid;
+    grid-template-columns:minmax(150px,220px) 1fr auto;
+    gap:32px;
+    padding:44px 8px;
+    border-bottom:1px solid var(--line);
+    align-items:start;
+    animation:rise .7s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+  .entry .when{padding-top:6px}
+  .entry .when .full{
+    font-size:13px;color:var(--ink-soft);letter-spacing:.2em;
+    border-left:2px solid var(--rose);padding-left:12px;line-height:1.9;
+  }
+  .entry .when .full b{color:var(--ink);font-weight:400;font-size:15px}
+
+  .entry .mid{min-width:0}
+  .entry .name{
+    font-family:var(--kai);font-size:clamp(24px,3.4vw,32px);letter-spacing:.06em;line-height:1.35;
+  }
+  .entry .note{
+    margin-top:10px;color:var(--ink-soft);font-size:14px;line-height:1.9;letter-spacing:.04em;
+    max-width:44ch;
+  }
+  .entry .next{
+    margin-top:16px;font-size:12.5px;color:var(--gold);letter-spacing:.14em;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .entry .next::before{content:"";width:22px;height:1px;background:var(--gold);display:inline-block}
+
+  .entry .count{text-align:right;padding-top:4px;white-space:nowrap}
+  .entry .count .num{
+    font-family:Georgia,var(--serif);
+    font-size:clamp(40px,6vw,62px);
+    font-weight:400;
+    line-height:1;
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+    letter-spacing:-.02em;
+  }
+  .entry .count .unit{
+    display:block;margin-top:8px;font-size:12px;letter-spacing:.4em;color:var(--ink-soft);
+  }
+  .entry.annual .count .num{color:var(--rose)}
+  .entry.today .count .num{color:var(--rose-deep)}
+  .entry.today .name::after{
+    content:"就是今天";display:inline-block;margin-left:14px;
+    font-size:12px;letter-spacing:.3em;color:var(--paper);
+    background:var(--rose);padding:4px 10px 4px 13px;vertical-align:6px;
+  }
+
+  /* ---------- 加载 / 空 / 错误状态 ---------- */
+  .state{
+    text-align:center;padding:110px 20px 80px;
+  }
+  .state .mark{font-family:var(--kai);font-size:88px;color:var(--rose);line-height:1;opacity:.85}
+  .state p{margin-top:26px;color:var(--ink-soft);letter-spacing:.12em;font-size:15px;line-height:2.1}
+  .state p strong{color:var(--ink);font-weight:400}
+
+  /* ---------- 落花 ---------- */
+  .petals{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:40}
+  .petal{
+    position:absolute;top:-40px;
+    width:14px;height:14px;border-radius:14px 2px 14px 2px;
+    background:var(--rose);opacity:.75;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    0%{transform:translateY(-40px) rotate(0deg) translateX(0)}
+    100%{transform:translateY(105vh) rotate(560deg) translateX(60px)}
+  }
+
+  /* ---------- 页脚 ---------- */
+  footer{
+    margin-top:90px;text-align:center;color:var(--ink-soft);
+    font-size:12px;letter-spacing:.3em;
+  }
+  footer .heart{color:var(--rose);font-size:14px;letter-spacing:0;display:block;margin-bottom:14px}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 90px}
+    .entry{grid-template-columns:1fr;gap:18px;padding:34px 4px}
+    .entry .count{text-align:left;padding-top:2px;display:flex;align-items:baseline;gap:12px}
+    .entry .count .unit{margin-top:0}
+    .masthead .date-line .en{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="date-line">
+      <span id="todayCN">—</span>
+      <span class="en" id="todayEN">—</span>
+    </div>
+    <h1 id="title">与你有关的<em>日子</em></h1>
+    <p class="sub" id="subtitle">那些值得被记住的，每一天都在长大。</p>
+  </header>
+
+  <div id="list" class="entries"></div>
+
+  <div id="state" class="state" hidden>
+    <div class="mark">❦</div>
+    <p id="stateText"></p>
+  </div>
+
+  <footer>
+    <span class="heart">❤</span>
+    岁岁 · 年年
+  </footer>
+</div>
+
+<div class="petals" id="petals"></div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+  var WEEK = ['日','一','二','三','四','五','六'];
+  var M=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+  function pad(n){ return (n<10?'0':'')+n; }
+  function today0(){ var d=new Date(); d.setHours(0,0,0,0); return d; }
+  function date0(s){ var p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function daysBetween(a,b){ return Math.round((b-a)/86400000); }
+
+  function nextOccur(dateStr){
+    var t = today0(), d = date0(dateStr);
+    var n = new Date(t.getFullYear(), d.getMonth(), d.getDate());
+    if(n < t) n = new Date(t.getFullYear()+1, d.getMonth(), d.getDate());
+    return n;
+  }
+
+  function renderHead(){
+    var t = new Date();
+    document.getElementById('todayCN').textContent =
+      t.getFullYear()+' 年 '+(t.getMonth()+1)+' 月 '+t.getDate()+' 日 · 星期'+WEEK[t.getDay()];
+    document.getElementById('todayEN').textContent = M[t.getMonth()]+' '+pad(t.getDate())+', '+t.getFullYear();
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function entryHTML(e, idx){
+    var d = date0(e.date);
+    var isToday = false, num = 0, unit = '', nextHTML = '';
+
+    if(e.annual){
+      var n = nextOccur(e.date);
+      isToday = daysBetween(today0(), n) === 0;
+      num = isToday ? (today0().getFullYear() - d.getFullYear()) : daysBetween(today0(), n);
+      unit = isToday ? '年 · 就是今天' : '天 后';
+      if(!isToday){
+        nextHTML = '<span class="next">'+n.getFullYear()+' 年 '+(n.getMonth()+1)+' 月 '+n.getDate()+' 日</span>';
+      }
+    }else{
+      num = daysBetween(d, today0());
+      unit = '天';
+    }
+
+    var cls = 'entry' + (e.annual?' annual':'') + (isToday?' today':'');
+    var fullDate = '<b>'+d.getFullYear()+'</b> / '+pad(d.getMonth()+1)+' / '+pad(d.getDate());
+
+    return '<article class="'+cls+'" style="animation-delay:'+(idx*0.06)+'s">'
+      + '<div class="when"><div class="full">'+fullDate+'</div></div>'
+      + '<div class="mid">'
+      +   '<div class="name">'+esc(e.name)+'</div>'
+      +   (e.note?'<p class="note">'+esc(e.note)+'</p>':'')
+      +   nextHTML
+      + '</div>'
+      + '<div class="count">'
+      +   '<span class="num">'+num+'</span>'
+      +   '<span class="unit">'+unit+'</span>'
+      + '</div>'
+      + '</article>';
+  }
+
+  function showState(text){
+    document.getElementById('list').innerHTML = '';
+    var s = document.getElementById('state');
+    s.hidden = false;
+    document.getElementById('stateText').innerHTML = text;
+  }
+
+  function render(data){
+    renderHead();
+
+    var title = data.title || '与你有关的日子';
+    var h1 = document.getElementById('title');
+    var i = title.lastIndexOf('日子');
+    h1.innerHTML = i >= 0
+      ? esc(title.slice(0,i)) + '<em>'+esc(title.slice(i))+'</em>'
+      : esc(title);
+    document.getElementById('subtitle').textContent = data.subtitle || '那些值得被记住的，每一天都在长大。';
+
+    var list = data.entries || [];
+    if(!list.length){
+      showState('这里还没有任何日子。<br><strong>打开 data.js，写下第一个吧。</strong>');
+      return;
+    }
+    document.getElementById('state').hidden = true;
+    list.sort(function(a,b){ return a.date < b.date ? -1 : 1; });
+    document.getElementById('list').innerHTML = list.map(entryHTML).join('');
+
+    var anyToday = list.some(function(e){
+      return e.annual && daysBetween(today0(), nextOccur(e.date))===0;
+    });
+    if(anyToday) petals(true);
+  }
+
+  // ---------- 落花 ----------
+  function petals(burst){
+    var host = document.getElementById('petals');
+    var n = burst ? 36 : 14;
+    var frag = document.createDocumentFragment();
+    for(var i=0;i<n;i++){
+      var p = document.createElement('i');
+      p.className = 'petal';
+      p.style.left = (Math.random()*100)+'%';
+      p.style.animationDuration = (5+Math.random()*6)+'s';
+      p.style.animationDelay = (Math.random()*4)+'s';
+      p.style.transform = 'scale('+(0.6+Math.random()*0.7)+')';
+      p.style.background = Math.random()<0.3 ? '#d98a8f' : '#b5525a';
+      frag.appendChild(p);
+    }
+    host.appendChild(frag);
+    setTimeout(function(){
+      while(host.firstChild) host.removeChild(host.firstChild);
+    }, 14000);
+  }
+
+  // ---------- 数据源（双通道） ----------
+  // 1) 本地：页面同目录的 data.js（双击打开时生效）
+  // 2) 远程：本地没有 data.js 时，自动从 jsDelivr 拉 GitHub 仓库的数据。
+  //    上传到 GitHub 后，把下面两行改成你的信息即可，例如：
+  //    var GITHUB_REPO   = '你的用户名/仓库名';
+  //    var GITHUB_BRANCH = 'main';
+  var GITHUB_REPO   = '';   // ← 改成 '用户名/仓库名'
+  var GITHUB_BRANCH = 'main';
+
+  function showLoadError(){
+    showState('没能读到数据。<br><strong>要么把 data.js 和页面放在同一文件夹，'
+      + '要么在 index.html 里填好 GITHUB_REPO 后上传到 GitHub。</strong>');
+  }
+
+  function tryRender(){
+    if (window.DATA){ render(window.DATA); return true; }
+    return false;
+  }
+
+  function loadRemote(){
+    if (!GITHUB_REPO){ showLoadError(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/gh/' + GITHUB_REPO + '@' + GITHUB_BRANCH
+          + '/data.js?v=' + Date.now();   // 加时间戳，防止 jsDelivr 缓存旧数据
+    s.onload  = function(){ if(!tryRender()) showLoadError(); };
+    s.onerror = function(){ showLoadError(); };
+    document.head.appendChild(s);
+  }
+
+  // 先试本地同目录的 data.js（上方 <script src="data.js"> 已先行加载）
+  if (!tryRender()) loadRemote();
+
+  setInterval(renderHead, 60000);
+})();
+</script>
+</body>
+</html>
