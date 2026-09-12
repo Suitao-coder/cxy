@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="zh-CN" data-page-node-id="uARxdzyDlgIvHQEeGCmwt9">
+<head data-page-node-id="Br2cs98tBm3BkaIsDwKsi0">
+<meta charset="UTF-8" data-page-node-id="8pkLRtapHlxDnubsLf5KHd">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="TOx37bV7HUVFfDiBPF4kUc">
 <title>我们的日子</title>
 <style>
   :root{
@@ -59,7 +59,10 @@
     border-bottom:1px solid var(--line);
     align-items:start;
     animation:rise .7s cubic-bezier(.16,1,.3,1) both;
+    cursor:pointer;
+    transition:background .25s ease;
   }
+  .entry:hover{background:rgba(181,82,90,.025)}
   @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 
   .entry .when{padding-top:6px}
@@ -103,6 +106,84 @@
     font-size:12px;letter-spacing:.3em;color:var(--paper);
     background:var(--rose);padding:4px 10px 4px 13px;vertical-align:6px;
   }
+  .entry .hint{
+    margin-top:14px;font-size:11.5px;letter-spacing:.2em;color:var(--gold);
+    opacity:.7;transition:opacity .25s ease;
+  }
+  .entry:hover .hint{opacity:1}
+  .entry .next-mini{
+    margin-top:10px;font-size:11.5px;letter-spacing:.08em;color:var(--ink-soft);
+    line-height:1.7;
+  }
+  .entry .next-mini b{color:var(--rose);font-weight:400;font-size:13px}
+  .entry .next-mini.today{color:var(--rose-deep)}
+
+  /* ---------- 详情弹窗 ---------- */
+  .detail-veil{
+    position:fixed;inset:0;background:rgba(67,50,46,.42);
+    display:none;align-items:flex-end;justify-content:center;
+    z-index:60;padding:24px;
+    backdrop-filter:blur(2px);
+  }
+  .detail-veil.on{display:flex;animation:fade .25s ease both}
+  .detail-sheet{
+    position:relative;
+    background:var(--paper);width:min(540px,100%);
+    padding:48px 44px 38px;border:1px solid var(--line);
+    box-shadow:0 -30px 60px -20px rgba(67,50,46,.4);
+    animation:slideUp .45s cubic-bezier(.16,1,.3,1) both;
+    max-height:82vh;overflow:auto;
+  }
+  @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  .detail-sheet .close{
+    position:absolute;top:18px;left:18px;width:36px;height:36px;
+    background:none;border:1px solid var(--line);color:var(--ink-soft);
+    font-size:18px;cursor:pointer;transition:background .2s ease,color .2s ease;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .detail-sheet .close:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .detail-sheet .meta{
+    font-size:12px;letter-spacing:.25em;color:var(--ink-soft);
+    border-left:2px solid var(--rose);padding-left:12px;line-height:1.8;
+  }
+  .detail-sheet .meta b{color:var(--ink);font-weight:400;font-size:14px}
+  .detail-sheet h2{
+    font-family:var(--kai);font-size:30px;font-weight:400;letter-spacing:.06em;
+    margin-top:16px;line-height:1.3;
+  }
+  .detail-sheet .note{
+    margin-top:10px;color:var(--ink-soft);font-size:14px;line-height:1.9;letter-spacing:.04em;
+  }
+  .detail-sheet .sum{
+    margin-top:24px;padding:16px 20px;background:var(--paper-deep);
+    font-size:13px;letter-spacing:.1em;color:var(--ink);
+    display:flex;justify-content:space-between;align-items:baseline;gap:18px;
+  }
+  .detail-sheet .sum b{color:var(--rose);font-weight:400;font-size:22px;font-family:Georgia,var(--serif)}
+  .timeline{
+    margin-top:28px;border-top:1px solid var(--line);
+  }
+  .timeline h3{
+    margin-top:20px;font-size:12px;letter-spacing:.35em;color:var(--ink-soft);font-weight:400;
+  }
+  .t-item{
+    display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;
+    padding:14px 0;border-bottom:1px dashed var(--line);
+  }
+  .t-item:last-child{border-bottom:none}
+  .t-item .t-day{
+    font-family:Georgia,var(--serif);font-size:20px;color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  .t-item .t-day small{display:block;font-size:10.5px;letter-spacing:.2em;color:var(--ink-soft);margin-top:2px}
+  .t-item .t-when{font-size:13px;color:var(--ink);letter-spacing:.04em;text-align:right}
+  .t-item .t-when small{display:block;color:var(--ink-soft);font-size:11px;margin-top:2px}
+  .t-item .t-label{font-size:12.5px;letter-spacing:.14em;color:var(--ink-soft)}
+  .t-item.upcoming .t-day{color:var(--rose)}
+  .t-empty{
+    padding:30px 10px;color:var(--ink-soft);font-size:13px;letter-spacing:.1em;
+    text-align:center;
+  }
 
   /* ---------- 加载 / 空 / 错误状态 ---------- */
   .state{
@@ -141,31 +222,36 @@
   }
 </style>
 </head>
-<body>
-<div class="wrap">
-  <header class="masthead">
-    <div class="date-line">
-      <span id="todayCN">—</span>
-      <span class="en" id="todayEN">—</span>
+<body data-page-node-id="W7u07K4fTOT1l8JOEremzM">
+<div class="wrap" data-page-node-id="5Rd0MXyQ4Yi22nLut00DmR">
+  <header class="masthead" data-page-node-id="0UWA9qapRqj57JP7yYj3oU">
+    <div class="date-line" data-page-node-id="0pGqrGDeJlX4zZBkjT2nVG">
+      <span id="todayCN" data-page-node-id="z8k2Cn8lfSs7JJGBPHgYne">—</span>
+      <span class="en" id="todayEN" data-page-node-id="z2cAgC1CPwJlyOsDptoUKB">—</span>
     </div>
-    <h1 id="title">与你有关的<em>日子</em></h1>
-    <p class="sub" id="subtitle">那些值得被记住的，每一天都在长大。</p>
+    <h1 id="title" data-page-node-id="yokG5vxLyZzT4PCCrxGnck">与你有关的<em data-page-node-id="4wViHOmqJOAg85JrjKzEJx">日子</em></h1>
+    <p class="sub" id="subtitle" data-page-node-id="DsziNaQOelbanb1n0lYQAh">那些值得被记住的，每一天都在长大。</p>
   </header>
 
-  <div id="list" class="entries"></div>
+  <div id="list" class="entries" data-page-node-id="K0MINQaEbEheM3zgi5K1fU"></div>
 
-  <div id="state" class="state" hidden>
-    <div class="mark">❦</div>
-    <p id="stateText"></p>
+  <div id="state" class="state" hidden data-page-node-id="kJfoFU1G4y1A3iWvk6YBh7">
+    <div class="mark" data-page-node-id="efLgDuJDVMtyW6bSC9rHgP">❦</div>
+    <p id="stateText" data-page-node-id="x2KYLK1JL2NAnAoZFrHbMG"></p>
   </div>
 
-  <footer>
-    <span class="heart">❤</span>
-    岁岁 · 年年
+  <footer data-page-node-id="VYLFzA5B935TRIPCPKSKPC">
+    <span class="heart" data-page-node-id="iaJqXnwZdnxXCNHqZKxgJh">❤</span>
+    春来夏往，秋收冬藏，我们来日方长
   </footer>
 </div>
 
-<div class="petals" id="petals"></div>
+<div class="petals" id="petals" data-page-node-id="ZThDVS47MdaLjonKGpPei3"></div>
+
+<!-- 详情弹窗 -->
+<div class="detail-veil" id="detailVeil" role="dialog" aria-modal="true">
+  <div class="detail-sheet" id="detailSheet"></div>
+</div>
 
 <script src="data.js"></script>
 <script>
@@ -194,36 +280,179 @@
 
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 
+  // ---------- 节点生成 ----------
+  // 一条纪念日生成"未来即将到来的纪念日节点"（不显示已过）
+  //   · 1-100 天：每 10 天一次（10/20/30…/100）
+  //   · 100-1000 天：每 100 天一次（200/300…900/1000）
+  //   · 1000-10000 天：每 1000 天一次（2000/3000…9000）
+  //   · 10000 天后：每 5000 天一次（15000/20000…）
+  //   · 特殊天：666/888/1314/9999 自动加入
+  //   · 周年：1/2/3…年（annual=true）
+  //   · 自定义：data.js 的 custom 字段
+  // 注意：1000 不放进 SPECIAL——它已由上面「100-1000 每 100 天」规则生成，加了会一天两条
+  var SPECIAL = [666, 888, 1314, 9999];
+
+  function buildMilestones(entry){
+    var d = date0(entry.date);
+    var today = today0();
+    var list = [];
+    var elapsed = daysBetween(d, today);
+
+    // 上限 = 今天 + 5 年左右，避免无止境算下去
+    var farFuture = (entry.annual ? 5 : 3);
+    var limitDays = elapsed + 365 * farFuture;
+
+    // 1) 整十 / 整百（只算未来）
+    //    未来第一个 10 的倍数 ≥ 今天
+    var startTen = Math.max(10, Math.ceil((elapsed + 1) / 10) * 10);
+    for(var k=startTen; k<=Math.min(limitDays, 100); k+=10){
+      list.push({ day: k, kind: k===100?'百日':(k+'天'), date: addDays(d, k) });
+    }
+    // 100 天后：每 100 天（200、300…900）
+    if(limitDays > 100){
+      var startH = Math.max(200, Math.ceil((elapsed + 1) / 100) * 100);
+      var endH = Math.min(limitDays, 1000);
+      for(var m=startH; m<=endH; m+=100){
+        list.push({ day: m, kind: m+'天', date: addDays(d, m) });
+      }
+    }
+    // 1000 天后：每 1000 天一次（2000、3000…）
+    if(limitDays > 1000){
+      var startK = Math.max(2000, Math.ceil((elapsed + 1) / 1000) * 1000);
+      var endK = Math.min(limitDays, 10000);
+      for(var m2=startK; m2<=endK; m2+=1000){
+        list.push({ day: m2, kind: m2+'天', date: addDays(d, m2) });
+      }
+    }
+    // 10000 天后：每 5000 天一次（15000、20000…）
+    if(limitDays > 10000){
+      var start10K = Math.max(15000, Math.ceil((elapsed + 1) / 5000) * 5000);
+      for(var m10=start10K; m10<=limitDays; m10+=5000){
+        list.push({ day: m10, kind: m10+'天', date: addDays(d, m10) });
+      }
+    }
+
+    // 2) 特殊天
+    for(var s=0; s<SPECIAL.length; s++){
+      var sv = SPECIAL[s];
+      var sd = addDays(d, sv);
+      if(sd <= today) continue;
+      if(daysBetween(d, sd) > limitDays) continue;
+      list.push({ day: sv, kind: '特别日', date: sd });
+    }
+
+    // 3) 周年
+    if(entry.annual){
+      var yStart = today.getFullYear() - d.getFullYear() + 1;
+      var yEnd   = today.getFullYear() - d.getFullYear() + farFuture;
+      for(var y=yStart; y<=yEnd; y++){
+        var yd = new Date(d.getFullYear()+y, d.getMonth(), d.getDate());
+        if(yd < today) continue;
+        list.push({ day: y*365, anniv: y, kind: y+'周年', date: yd });
+      }
+    }
+
+    // 4) 自定义天
+    if(Array.isArray(entry.custom)){
+      for(var i=0; i<entry.custom.length; i++){
+        var cd = entry.custom[i];
+        if(typeof cd !== 'number' || cd <= 0) continue;
+        var cdDate = addDays(d, cd);
+        if(cdDate <= today) continue;
+        if(daysBetween(d, cdDate) > limitDays) continue;
+        list.push({ day: cd, kind: '自定义', date: cdDate });
+      }
+    }
+
+    // 去重：同一天 + 同一显示值的节点只保留一条
+    // （避免某天同时被两条规则命中，如「1000 的倍数」与自定义天都是 1000）
+    var seen = {};
+    list = list.filter(function(m){
+      var key = m.date.getTime() + '|' + (m.anniv ? 'y'+m.anniv : 'd'+m.day);
+      if(seen[key]) return false;
+      seen[key] = 1;
+      return true;
+    });
+
+    list.sort(function(a,b){ return a.date - b.date; });
+    return list;
+  }
+
+  function addDays(base, n){
+    var r = new Date(base.getFullYear(), base.getMonth(), base.getDate());
+    r.setDate(r.getDate() + n);
+    return r;
+  }
+
+  function fmtDate(d){
+    return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  }
+
   function entryHTML(e, idx){
     var d = date0(e.date);
-    var isToday = false, num = 0, unit = '', nextHTML = '';
+    var today = today0();
+    var fullDate = '<b>'+d.getFullYear()+'</b> / '+pad(d.getMonth()+1)+' / '+pad(d.getDate());
 
-    if(e.annual){
-      var n = nextOccur(e.date);
-      isToday = daysBetween(today0(), n) === 0;
-      num = isToday ? (today0().getFullYear() - d.getFullYear()) : daysBetween(today0(), n);
-      unit = isToday ? '年 · 就是今天' : '天 后';
-      if(!isToday){
-        nextHTML = '<span class="next">'+n.getFullYear()+' 年 '+(n.getMonth()+1)+' 月 '+n.getDate()+' 日</span>';
+    var cls = 'entry';
+    var num, unit, nextMiniHTML = '', isToday = false, hintText = '查看所有纪念日 →';
+
+    if (e.annual) {
+      // 年度周期事件：主列显示「最近的那个纪念日」是已过还是未到
+      hintText = '查看纪念日 →';
+      cls += ' annual';
+      var thisYearAnniv = new Date(today.getFullYear(), d.getMonth(), d.getDate());
+      var lastAnniv = thisYearAnniv > today
+        ? new Date(today.getFullYear()-1, d.getMonth(), d.getDate())
+        : thisYearAnniv;
+      var nextAnniv = thisYearAnniv <= today
+        ? new Date(today.getFullYear()+1, d.getMonth(), d.getDate())
+        : thisYearAnniv;
+
+      if (lastAnniv.getTime() === today.getTime()) {
+        // 今天就是纪念日
+        isToday = true;
+        cls += ' today';
+        num = '今天';
+        unit = '';
+        nextMiniHTML = '<div class="next-mini today">第 <b>'
+          + (today.getFullYear() - d.getFullYear())
+          + '</b> 周年 · ' + lastAnniv.getFullYear() + ' 年 '
+          + (lastAnniv.getMonth()+1) + ' 月 ' + lastAnniv.getDate() + ' 日</div>';
+      } else {
+        var daysSinceLast = daysBetween(lastAnniv, today);
+        var daysToNext    = daysBetween(today, nextAnniv);
+        // 取最近的那一个
+        if (daysSinceLast <= daysToNext) {
+          num = daysSinceLast;
+          unit = '天前';
+          nextMiniHTML = '<div class="next-mini">上一个纪念日 · '
+            + lastAnniv.getFullYear() + ' 年 ' + (lastAnniv.getMonth()+1) + ' 月 '
+            + lastAnniv.getDate() + ' 日</div>';
+        } else {
+          num = daysToNext;
+          unit = '天后';
+          nextMiniHTML = '<div class="next-mini">下一个纪念日 · '
+            + nextAnniv.getFullYear() + ' 年 ' + (nextAnniv.getMonth()+1) + ' 月 '
+            + nextAnniv.getDate() + ' 日</div>';
+        }
       }
-    }else{
-      num = daysBetween(d, today0());
+    } else {
+      // 一次性事件：主列「已过 N 天」
+      num = daysBetween(d, today);
       unit = '天';
     }
 
-    var cls = 'entry' + (e.annual?' annual':'') + (isToday?' today':'');
-    var fullDate = '<b>'+d.getFullYear()+'</b> / '+pad(d.getMonth()+1)+' / '+pad(d.getDate());
-
-    return '<article class="'+cls+'" style="animation-delay:'+(idx*0.06)+'s">'
+    return '<article class="'+cls+'" data-idx="'+idx+'" style="animation-delay:'+(idx*0.06)+'s">'
       + '<div class="when"><div class="full">'+fullDate+'</div></div>'
       + '<div class="mid">'
       +   '<div class="name">'+esc(e.name)+'</div>'
       +   (e.note?'<p class="note">'+esc(e.note)+'</p>':'')
-      +   nextHTML
+      +   '<div class="hint">'+hintText+'</div>'
       + '</div>'
       + '<div class="count">'
       +   '<span class="num">'+num+'</span>'
       +   '<span class="unit">'+unit+'</span>'
+      +   nextMiniHTML
       + '</div>'
       + '</article>';
   }
@@ -244,7 +473,7 @@
     h1.innerHTML = i >= 0
       ? esc(title.slice(0,i)) + '<em>'+esc(title.slice(i))+'</em>'
       : esc(title);
-    document.getElementById('subtitle').textContent = data.subtitle || '那些值得被记住的，每一天都在长大。';
+    document.getElementById('subtitle').textContent = data.subtitle || '与你有关的每一天，都让人心旷神怡。';
 
     var list = data.entries || [];
     if(!list.length){
@@ -260,6 +489,120 @@
     });
     if(anyToday) petals(true);
   }
+
+  // ---------- 详情弹窗 ----------
+  function openDetail(idx, entries){
+    var e = entries[idx];
+    if (!e) return;
+    var d = date0(e.date);
+    var today = today0();
+
+    // 上一个 / 下一个纪念日（仅在 annual=true 时有意义，但算出来备用）
+    var thisYearAnniv = new Date(today.getFullYear(), d.getMonth(), d.getDate());
+    var lastAnniv = thisYearAnniv > today
+      ? new Date(today.getFullYear()-1, d.getMonth(), d.getDate())
+      : thisYearAnniv;
+    var nextAnniv = thisYearAnniv <= today
+      ? new Date(today.getFullYear()+1, d.getMonth(), d.getDate())
+      : thisYearAnniv;
+    var daysSinceLast = daysBetween(lastAnniv, today);
+    var daysToNext    = daysBetween(today, nextAnniv);
+
+    var meta = '<b>'+d.getFullYear()+'</b> / '+pad(d.getMonth()+1)+' / '+pad(d.getDate());
+
+    var sumBlock, bodyHTML;
+
+    if (e.annual) {
+      // 年度周期：顶部摘要 + 上下两个纪念日
+      if (lastAnniv.getTime() === today.getTime()) {
+        var yrs = today.getFullYear() - d.getFullYear();
+        sumBlock = '就是今天 · 第 <b>'+yrs+'</b> 周年';
+      } else if (daysSinceLast <= daysToNext) {
+        sumBlock = '上一个纪念日过去 <b>'+daysSinceLast+'</b> 天';
+      } else {
+        sumBlock = '下一个纪念日还有 <b>'+daysToNext+'</b> 天';
+      }
+
+      function fmtD(dd){ return dd.getFullYear()+' 年 '+(dd.getMonth()+1)+' 月 '+dd.getDate()+' 日'; }
+      function block(label, dd, sub){
+        return '<div class="t-item">'
+             +   '<div class="t-label">'+label+'</div>'
+             +   '<div class="t-when">'+fmtD(dd)+'<small>'+sub+'</small></div>'
+             + '</div>';
+      }
+      var lastSub = (lastAnniv.getTime() === today.getTime()) ? '就是今天'
+                  : '过去 '+daysSinceLast+' 天';
+      var nextSub = '还有 '+daysToNext+' 天';
+
+      bodyHTML = '<div class="timeline"><h3>每年的这一天</h3>'
+        + block('上一个纪念日', lastAnniv, lastSub)
+        + block('下一个纪念日', nextAnniv, nextSub)
+        + '</div>';
+
+    } else {
+      // 一次性事件：节点列表
+      var milestones = buildMilestones(e);
+      var total = daysBetween(d, today);
+      sumBlock = total > 0
+        ? '已过 <b>'+total+'</b> 天'
+        : '还有 <b>'+(-total)+'</b> 天';
+
+      var items = milestones.map(function(m){
+        var diff = daysBetween(today, m.date);
+        var diffText = diff===0 ? '就是今天' : '还有 '+diff+' 天';
+        var mainNum = m.anniv ? '第 '+m.anniv+' 年' : m.day;
+        var subTxt = m.anniv ? '' : (m.kind==='自定义' ? '第'+m.day+' 天' : '');
+        return '<div class="t-item upcoming">'
+             +   '<div class="t-day">'+mainNum+'<small>'+subTxt+'</small></div>'
+             +   '<div class="t-when">'+m.date.getFullYear()+' 年 '+(m.date.getMonth()+1)+' 月 '+m.date.getDate()+' 日<small>'+diffText+'</small></div>'
+             + '</div>';
+      }).join('');
+
+      var noUpcoming = !items;
+      var emptyHint = noUpcoming ? '<div class="t-empty">暂时还没有即将到来的纪念日。</div>' : '';
+      bodyHTML = '<div class="timeline"><h3>未来纪念日</h3>'+emptyHint+items+'</div>';
+    }
+
+    var sumTail = e.annual ? ''
+      : '<small style="font-size:11px;letter-spacing:.2em;color:var(--ink-soft)">到现在</small>';
+
+    var html =
+      '<button class="close" id="detailClose" aria-label="关闭">✕</button>'
+      + '<div class="meta">'+meta+'</div>'
+      + '<h2>'+esc(e.name)+'</h2>'
+      + (e.note?'<p class="note">'+esc(e.note)+'</p>':'')
+      + '<div class="sum">'+sumBlock+sumTail+'</div>'
+      + bodyHTML;
+
+    var sheet = document.getElementById('detailSheet');
+    sheet.innerHTML = html;
+    var veil = document.getElementById('detailVeil');
+    veil.classList.add('on');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('detailClose').focus();
+  }
+
+  function closeDetail(){
+    document.getElementById('detailVeil').classList.remove('on');
+    document.body.style.overflow = '';
+  }
+
+  // 列表点击 → 打开对应条目
+  document.getElementById('list').addEventListener('click', function(ev){
+    var art = ev.target.closest('article.entry');
+    if(!art) return;
+    var idx = +art.getAttribute('data-idx');
+    var entries = window.DATA && window.DATA.entries || [];
+    openDetail(idx, entries);
+  });
+
+  // 弹窗关闭
+  document.getElementById('detailVeil').addEventListener('click', function(ev){
+    if(ev.target.id === 'detailVeil' || ev.target.id === 'detailClose') closeDetail();
+  });
+  document.addEventListener('keydown', function(ev){
+    if(ev.key === 'Escape') closeDetail();
+  });
 
   // ---------- 落花 ----------
   function petals(burst){
@@ -285,11 +628,13 @@
   // ---------- 数据源（双通道） ----------
   // 1) 本地：页面同目录的 data.js（双击打开时生效）
   // 2) 远程：本地没有 data.js 时，自动从 jsDelivr 拉 GitHub 仓库的数据。
-  //    上传到 GitHub 后，把下面两行改成你的信息即可，例如：
+  //    上传到 GitHub 后，把下面三行改成你的信息即可，例如：
   //    var GITHUB_REPO   = '你的用户名/仓库名';
   //    var GITHUB_BRANCH = 'main';
-  var GITHUB_REPO   = '';   // ← 改成 '用户名/仓库名'
+  //    var GITHUB_PATH   = '仓库里的子目录名';   // 跟 index.html 同目录时可留空
+  var GITHUB_REPO   = 'Suitao-coder/cxy';   // ← 改成 '用户名/仓库名'
   var GITHUB_BRANCH = 'main';
+  var GITHUB_PATH   = 'birthday-gift';      // ← 文件在子目录里时填目录名，否则留空
 
   function showLoadError(){
     showState('没能读到数据。<br><strong>要么把 data.js 和页面放在同一文件夹，'
@@ -303,9 +648,10 @@
 
   function loadRemote(){
     if (!GITHUB_REPO){ showLoadError(); return; }
+    var path = GITHUB_PATH ? '/' + GITHUB_PATH : '';
     var s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/gh/' + GITHUB_REPO + '@' + GITHUB_BRANCH
-          + '/data.js?v=' + Date.now();   // 加时间戳，防止 jsDelivr 缓存旧数据
+          + path + '/data.js?v=' + Date.now();   // 加时间戳，防止 jsDelivr 缓存旧数据
     s.onload  = function(){ if(!tryRender()) showLoadError(); };
     s.onerror = function(){ showLoadError(); };
     document.head.appendChild(s);
